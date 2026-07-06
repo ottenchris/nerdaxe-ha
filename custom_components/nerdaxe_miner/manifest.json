@@ -1,0 +1,13 @@
+{
+  "domain": "nerdaxe_miner",
+  "name": "NerdAxe Miner",
+  "after_dependencies": [],
+  "codeowners": ["@ottenchris"],
+  "config_flow": true,
+  "documentation": "https://github.com/ottenchris/nerdaxe-ha",
+  "integration_type": "device",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/ottenchris/nerdaxe-ha/issues",
+  "requirements": [],
+  "version": "0.1.0"
+}

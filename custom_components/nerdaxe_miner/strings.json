@@ -1,0 +1,71 @@
+{
+  "title": "NerdAxe Miner",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Set up NerdAxe Miner",
+        "description": "Connect to an AxeOS / ESP-Miner compatible miner on your local network.",
+        "data": {
+          "host": "Miner host or IP address",
+          "scan_interval": "Scan interval in seconds",
+          "history_enabled": "Enable local raw history",
+          "history_max_mb": "Maximum history storage in MB",
+          "history_raw_keep_days": "Days to keep uncompressed",
+          "history_store_raw_payload": "Store raw API payload"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Could not connect to the miner.",
+      "invalid_host": "Enter a valid host or IP address.",
+      "unknown": "Unexpected error."
+    },
+    "abort": {
+      "already_configured": "This miner is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "NerdAxe Miner options",
+        "data": {
+          "scan_interval": "Scan interval in seconds",
+          "history_enabled": "Enable local raw history",
+          "history_max_mb": "Maximum history storage in MB",
+          "history_raw_keep_days": "Days to keep uncompressed",
+          "history_store_raw_payload": "Store raw API payload"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "hash_rate": { "name": "Hashrate" },
+      "hash_rate_1m": { "name": "Hashrate 1m" },
+      "hash_rate_10m": { "name": "Hashrate 10m" },
+      "hash_rate_1h": { "name": "Hashrate 1h" },
+      "hash_rate_1d": { "name": "Hashrate 1d" },
+      "asic_temperature": { "name": "ASIC temperature" },
+      "vr_temperature": { "name": "VR temperature" },
+      "power": { "name": "Power" },
+      "voltage": { "name": "Voltage" },
+      "current": { "name": "Current" },
+      "fan_percent": { "name": "Fan" },
+      "fan_rpm": { "name": "Fan RPM" },
+      "shares_accepted": { "name": "Shares accepted" },
+      "shares_rejected": { "name": "Shares rejected" },
+      "best_diff": { "name": "Best diff" },
+      "best_session_diff": { "name": "Best session diff" },
+      "wifi_rssi": { "name": "Wi-Fi RSSI" },
+      "frequency": { "name": "Frequency" },
+      "core_voltage": { "name": "Core voltage" },
+      "core_voltage_actual": { "name": "Actual core voltage" },
+      "uptime": { "name": "Uptime" },
+      "firmware_version": { "name": "Firmware version" },
+      "hostname": { "name": "Hostname" }
+    },
+    "binary_sensor": {
+      "stratum_connected": { "name": "Stratum connected" }
+    }
+  }
+}
