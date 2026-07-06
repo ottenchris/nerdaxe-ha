@@ -9,9 +9,9 @@ The integration talks directly to the miner in your local network:
 GET http://<miner-host>/api/system/info
 ```
 
-It creates native Home Assistant entities for live dashboards and automations,
-and can additionally keep compact raw history files outside Home Assistant's
-normal recorder database.
+It creates native Home Assistant entities for live dashboards and automations.
+If explicitly enabled, it can additionally keep compact raw history files
+outside Home Assistant's normal recorder database.
 
 ## Status
 
@@ -78,7 +78,7 @@ Initial setup asks for:
 
 - **Miner host or IP address**: for example `192.168.178.70`
 - **Scan interval**: 5-300 seconds, default `10`
-- **Enable local raw history**: default enabled
+- **Enable local raw history**: default disabled
 - **Maximum history storage in MB**: default `512`
 - **Days to keep uncompressed**: default `30`
 - **Store raw API payload**: default disabled
@@ -123,7 +123,8 @@ attribute blobs.
 
 ## Raw History
 
-If enabled, samples are written below the Home Assistant config directory:
+Raw history is opt-in. If enabled, samples are written below the Home Assistant
+config directory:
 
 ```text
 <config>/nerdaxe_recorder/<device-id>/
@@ -136,9 +137,10 @@ history-YYYY-MM-DD.ndjson
 history-YYYY-MM-DD.ndjson.gz
 ```
 
-Each line contains one JSON object with `ts` and normalized fields such as
+Each line contains one JSON object with `ts`, normalized fields such as
 `hashRate`, `temp`, `power`, `fanPercent`, `frequency`, `coreVoltage` and
-`stratumConnected`.
+`stratumConnected`, plus sanitized unrecognized API fields under `extra` when
+present.
 
 Fetch failures are stored as event rows:
 
@@ -186,10 +188,14 @@ redacted config/options, the last normalized sample and history-store settings.
 ## Privacy Notes
 
 The default entity states are small and do not include full upstream payloads.
+Local raw history is disabled by default.
 
-If **Store raw API payload** is enabled, the local NDJSON files can contain
-whatever the miner API returns, including pool URLs, usernames or wallet-like
-identifiers. Keep those files private.
+If **Enable local raw history** is enabled, the local NDJSON files may contain
+miner identifiers, hostnames, pool-related status and other fields returned by
+the miner API. If **Store raw API payload** is also enabled, those files can
+contain the full upstream payload, including pool URLs, usernames or
+wallet-like identifiers. Keep raw history files private and treat Home
+Assistant backups that include them as private too.
 
 ## Development
 

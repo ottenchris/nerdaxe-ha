@@ -21,6 +21,7 @@ from custom_components.nerdaxe_miner.const import (
     CONF_HISTORY_RAW_KEEP_DAYS,
     CONF_HISTORY_STORE_RAW_PAYLOAD,
     CONF_SCAN_INTERVAL,
+    DEFAULT_HISTORY_ENABLED,
 )
 
 
@@ -43,6 +44,14 @@ class HomeAssistantImportTest(unittest.TestCase):
                     CONF_HISTORY_STORE_RAW_PAYLOAD: False,
                 }
             )
+
+    def test_options_schema_defaults_to_history_disabled(self) -> None:
+        schema = config_flow._options_schema({})
+
+        options = schema({})
+
+        self.assertFalse(DEFAULT_HISTORY_ENABLED)
+        self.assertFalse(options[CONF_HISTORY_ENABLED])
 
 
 if __name__ == "__main__":
