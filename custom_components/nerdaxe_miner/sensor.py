@@ -39,6 +39,7 @@ class NerdAxeSensorEntityDescription(SensorEntityDescription):
 SENSOR_DESCRIPTIONS: tuple[NerdAxeSensorEntityDescription, ...] = (
     NerdAxeSensorEntityDescription(
         key="hash_rate",
+        name="Hashrate",
         translation_key="hash_rate",
         native_unit_of_measurement="GH/s",
         state_class=SensorStateClass.MEASUREMENT,
@@ -47,6 +48,7 @@ SENSOR_DESCRIPTIONS: tuple[NerdAxeSensorEntityDescription, ...] = (
     ),
     NerdAxeSensorEntityDescription(
         key="hash_rate_1m",
+        name="Hashrate 1m",
         translation_key="hash_rate_1m",
         native_unit_of_measurement="GH/s",
         state_class=SensorStateClass.MEASUREMENT,
@@ -55,6 +57,7 @@ SENSOR_DESCRIPTIONS: tuple[NerdAxeSensorEntityDescription, ...] = (
     ),
     NerdAxeSensorEntityDescription(
         key="hash_rate_10m",
+        name="Hashrate 10m",
         translation_key="hash_rate_10m",
         native_unit_of_measurement="GH/s",
         state_class=SensorStateClass.MEASUREMENT,
@@ -63,6 +66,7 @@ SENSOR_DESCRIPTIONS: tuple[NerdAxeSensorEntityDescription, ...] = (
     ),
     NerdAxeSensorEntityDescription(
         key="hash_rate_1h",
+        name="Hashrate 1h",
         translation_key="hash_rate_1h",
         native_unit_of_measurement="GH/s",
         state_class=SensorStateClass.MEASUREMENT,
@@ -71,6 +75,7 @@ SENSOR_DESCRIPTIONS: tuple[NerdAxeSensorEntityDescription, ...] = (
     ),
     NerdAxeSensorEntityDescription(
         key="hash_rate_1d",
+        name="Hashrate 1d",
         translation_key="hash_rate_1d",
         native_unit_of_measurement="GH/s",
         state_class=SensorStateClass.MEASUREMENT,
@@ -79,6 +84,7 @@ SENSOR_DESCRIPTIONS: tuple[NerdAxeSensorEntityDescription, ...] = (
     ),
     NerdAxeSensorEntityDescription(
         key="asic_temperature",
+        name="ASIC temperature",
         translation_key="asic_temperature",
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
@@ -88,6 +94,7 @@ SENSOR_DESCRIPTIONS: tuple[NerdAxeSensorEntityDescription, ...] = (
     ),
     NerdAxeSensorEntityDescription(
         key="vr_temperature",
+        name="VR temperature",
         translation_key="vr_temperature",
         device_class=SensorDeviceClass.TEMPERATURE,
         native_unit_of_measurement=UnitOfTemperature.CELSIUS,
@@ -97,6 +104,7 @@ SENSOR_DESCRIPTIONS: tuple[NerdAxeSensorEntityDescription, ...] = (
     ),
     NerdAxeSensorEntityDescription(
         key="power",
+        name="Power",
         translation_key="power",
         device_class=SensorDeviceClass.POWER,
         native_unit_of_measurement=UnitOfPower.WATT,
@@ -106,6 +114,7 @@ SENSOR_DESCRIPTIONS: tuple[NerdAxeSensorEntityDescription, ...] = (
     ),
     NerdAxeSensorEntityDescription(
         key="voltage",
+        name="Voltage",
         translation_key="voltage",
         device_class=SensorDeviceClass.VOLTAGE,
         native_unit_of_measurement=UnitOfElectricPotential.VOLT,
@@ -115,6 +124,7 @@ SENSOR_DESCRIPTIONS: tuple[NerdAxeSensorEntityDescription, ...] = (
     ),
     NerdAxeSensorEntityDescription(
         key="current",
+        name="Current",
         translation_key="current",
         device_class=SensorDeviceClass.CURRENT,
         native_unit_of_measurement=UnitOfElectricCurrent.AMPERE,
@@ -124,6 +134,7 @@ SENSOR_DESCRIPTIONS: tuple[NerdAxeSensorEntityDescription, ...] = (
     ),
     NerdAxeSensorEntityDescription(
         key="fan_percent",
+        name="Fan",
         translation_key="fan_percent",
         native_unit_of_measurement=PERCENTAGE,
         state_class=SensorStateClass.MEASUREMENT,
@@ -132,6 +143,7 @@ SENSOR_DESCRIPTIONS: tuple[NerdAxeSensorEntityDescription, ...] = (
     ),
     NerdAxeSensorEntityDescription(
         key="fan_rpm",
+        name="Fan RPM",
         translation_key="fan_rpm",
         native_unit_of_measurement="rpm",
         state_class=SensorStateClass.MEASUREMENT,
@@ -140,6 +152,7 @@ SENSOR_DESCRIPTIONS: tuple[NerdAxeSensorEntityDescription, ...] = (
     ),
     NerdAxeSensorEntityDescription(
         key="shares_accepted",
+        name="Shares accepted",
         translation_key="shares_accepted",
         state_class=SensorStateClass.TOTAL_INCREASING,
         suggested_display_precision=0,
@@ -147,6 +160,7 @@ SENSOR_DESCRIPTIONS: tuple[NerdAxeSensorEntityDescription, ...] = (
     ),
     NerdAxeSensorEntityDescription(
         key="shares_rejected",
+        name="Shares rejected",
         translation_key="shares_rejected",
         state_class=SensorStateClass.TOTAL_INCREASING,
         suggested_display_precision=0,
@@ -154,6 +168,7 @@ SENSOR_DESCRIPTIONS: tuple[NerdAxeSensorEntityDescription, ...] = (
     ),
     NerdAxeSensorEntityDescription(
         key="best_diff",
+        name="Best diff",
         translation_key="best_diff",
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=0,
@@ -161,6 +176,7 @@ SENSOR_DESCRIPTIONS: tuple[NerdAxeSensorEntityDescription, ...] = (
     ),
     NerdAxeSensorEntityDescription(
         key="best_session_diff",
+        name="Best session diff",
         translation_key="best_session_diff",
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=0,
@@ -168,6 +184,7 @@ SENSOR_DESCRIPTIONS: tuple[NerdAxeSensorEntityDescription, ...] = (
     ),
     NerdAxeSensorEntityDescription(
         key="wifi_rssi",
+        name="Wi-Fi RSSI",
         translation_key="wifi_rssi",
         device_class=SensorDeviceClass.SIGNAL_STRENGTH,
         native_unit_of_measurement="dBm",
@@ -178,6 +195,7 @@ SENSOR_DESCRIPTIONS: tuple[NerdAxeSensorEntityDescription, ...] = (
     ),
     NerdAxeSensorEntityDescription(
         key="frequency",
+        name="Frequency",
         translation_key="frequency",
         device_class=SensorDeviceClass.FREQUENCY,
         native_unit_of_measurement="MHz",
@@ -187,6 +205,7 @@ SENSOR_DESCRIPTIONS: tuple[NerdAxeSensorEntityDescription, ...] = (
     ),
     NerdAxeSensorEntityDescription(
         key="core_voltage",
+        name="Core voltage",
         translation_key="core_voltage",
         device_class=SensorDeviceClass.VOLTAGE,
         native_unit_of_measurement="mV",
@@ -196,6 +215,7 @@ SENSOR_DESCRIPTIONS: tuple[NerdAxeSensorEntityDescription, ...] = (
     ),
     NerdAxeSensorEntityDescription(
         key="core_voltage_actual",
+        name="Actual core voltage",
         translation_key="core_voltage_actual",
         device_class=SensorDeviceClass.VOLTAGE,
         native_unit_of_measurement="mV",
@@ -205,6 +225,7 @@ SENSOR_DESCRIPTIONS: tuple[NerdAxeSensorEntityDescription, ...] = (
     ),
     NerdAxeSensorEntityDescription(
         key="uptime",
+        name="Uptime",
         translation_key="uptime",
         device_class=SensorDeviceClass.DURATION,
         native_unit_of_measurement=UnitOfTime.SECONDS,
@@ -215,12 +236,14 @@ SENSOR_DESCRIPTIONS: tuple[NerdAxeSensorEntityDescription, ...] = (
     ),
     NerdAxeSensorEntityDescription(
         key="firmware_version",
+        name="Firmware version",
         translation_key="firmware_version",
         entity_category=EntityCategory.DIAGNOSTIC,
         value_fn=lambda data: data.firmware_version,
     ),
     NerdAxeSensorEntityDescription(
         key="hostname",
+        name="Hostname",
         translation_key="hostname",
         entity_category=EntityCategory.DIAGNOSTIC,
         value_fn=lambda data: data.hostname,

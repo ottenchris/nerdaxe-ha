@@ -29,6 +29,7 @@ class NerdAxeBinarySensorEntityDescription(BinarySensorEntityDescription):
 BINARY_SENSOR_DESCRIPTIONS: tuple[NerdAxeBinarySensorEntityDescription, ...] = (
     NerdAxeBinarySensorEntityDescription(
         key="stratum_connected",
+        name="Stratum connected",
         translation_key="stratum_connected",
         device_class=BinarySensorDeviceClass.CONNECTIVITY,
         value_fn=lambda data: data.stratum_connected,
