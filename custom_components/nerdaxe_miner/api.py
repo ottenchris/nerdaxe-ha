@@ -100,11 +100,17 @@ class MinerApiClient:
                         body_preview=body or None,
                     ) from err
         except asyncio.TimeoutError as err:
-            raise MinerApiError("Timed out while fetching miner data", url=self.info_url) from err
+            raise MinerApiError(
+                "Timed out while fetching miner data",
+                url=self.info_url,
+            ) from err
         except aiohttp.ClientError as err:
             raise MinerApiError(str(err), url=self.info_url) from err
 
         if not isinstance(payload, dict):
-            raise MinerApiError("Miner returned a non-object JSON payload", url=self.info_url)
+            raise MinerApiError(
+                "Miner returned a non-object JSON payload",
+                url=self.info_url,
+            )
 
         return payload

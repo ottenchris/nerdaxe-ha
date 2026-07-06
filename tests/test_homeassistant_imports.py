@@ -5,7 +5,9 @@ import unittest
 try:
     import voluptuous as vol
 except ModuleNotFoundError as err:
-    raise unittest.SkipTest("Home Assistant test dependencies are not installed") from err
+    raise unittest.SkipTest(
+        "Home Assistant test dependencies are not installed"
+    ) from err
 
 try:
     import homeassistant  # noqa: F401

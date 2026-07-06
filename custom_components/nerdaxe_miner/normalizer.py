@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
 import math
 import re
+from datetime import datetime, timezone
 from typing import Any, Dict, Iterable, Optional
 
 from .models import MinerSample
@@ -274,7 +274,10 @@ def infer_stratum_connected(payload: Any) -> Optional[bool]:
     return None
 
 
-def normalize_miner_payload(payload: Any, now: Optional[datetime] = None) -> MinerSample:
+def normalize_miner_payload(
+    payload: Any,
+    now: Optional[datetime] = None,
+) -> MinerSample:
     """Normalize a raw AxeOS/ESP-Miner info payload."""
 
     if not isinstance(payload, dict):

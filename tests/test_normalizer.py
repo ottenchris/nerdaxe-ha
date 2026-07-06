@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
 import unittest
+from datetime import datetime, timezone
 
 from custom_components.nerdaxe_miner.normalizer import (
     find_stable_device_id,

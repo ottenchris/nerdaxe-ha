@@ -3,15 +3,16 @@
 from __future__ import annotations
 
 import asyncio
-from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
 import functools
 import gzip
 import json
 import os
-from pathlib import Path
 import re
 import shutil
+from contextlib import suppress
+from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, Optional
 
 from .models import MinerSample
@@ -213,15 +214,19 @@ class NerdAxeHistoryStore:
         tmp_target = target.with_suffix(target.suffix + ".tmp")
 
         if not target.exists():
-            with entry.path.open("rb") as source:
-                with gzip.open(tmp_target, "wb", compresslevel=9) as target_file:
-                    shutil.copyfileobj(source, target_file)
+            with (
+                entry.path.open("rb") as source,
+                gzip.open(
+                    tmp_target,
+                    "wb",
+                    compresslevel=9,
+                ) as target_file,
+            ):
+                shutil.copyfileobj(source, target_file)
             os.replace(tmp_target, target)
 
-        try:
+        with suppress(FileNotFoundError):
             entry.path.unlink()
-        except FileNotFoundError:
-            pass
 
     def _iter_budget_files_sync(self) -> Iterable[Path]:
         if not self.root_dir.exists():

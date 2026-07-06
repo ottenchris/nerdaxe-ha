@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from datetime import timedelta
 import logging
+from datetime import timedelta
 from pathlib import Path
 from typing import Any
 
@@ -50,7 +50,9 @@ class NerdAxeMinerCoordinator(DataUpdateCoordinator[MinerSample]):
         self._history_store = self._create_history_store(hass, entry)
         self._device_identifier = entry.unique_id or entry.entry_id
 
-        scan_interval = int(entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL))
+        scan_interval = int(
+            entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
+        )
         super().__init__(
             hass,
             _LOGGER,
@@ -110,7 +112,10 @@ class NerdAxeMinerCoordinator(DataUpdateCoordinator[MinerSample]):
 
         max_mb = int(entry.options.get(CONF_HISTORY_MAX_MB, DEFAULT_HISTORY_MAX_MB))
         raw_keep_days = int(
-            entry.options.get(CONF_HISTORY_RAW_KEEP_DAYS, DEFAULT_HISTORY_RAW_KEEP_DAYS)
+            entry.options.get(
+                CONF_HISTORY_RAW_KEEP_DAYS,
+                DEFAULT_HISTORY_RAW_KEEP_DAYS,
+            )
         )
         store_raw_payload = bool(
             entry.options.get(
