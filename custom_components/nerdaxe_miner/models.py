@@ -22,15 +22,22 @@ class MinerSample:
     voltage: Optional[float] = None
     current: Optional[float] = None
     fan_percent: Optional[float] = None
+    manual_fan_speed: Optional[float] = None
+    auto_fan_speed: Optional[bool] = None
     fan_rpm: Optional[float] = None
+    pid_target_temp: Optional[float] = None
+    overheat_temp: Optional[float] = None
     shares_accepted: Optional[float] = None
     shares_rejected: Optional[float] = None
     best_diff: Optional[float] = None
     best_session_diff: Optional[float] = None
     wifi_rssi: Optional[float] = None
     frequency: Optional[float] = None
+    actual_frequency: Optional[float] = None
+    default_frequency: Optional[float] = None
     core_voltage: Optional[float] = None
     core_voltage_actual: Optional[float] = None
+    default_core_voltage: Optional[float] = None
     uptime_seconds: Optional[float] = None
     firmware_version: Optional[str] = None
     hostname: Optional[str] = None
@@ -55,15 +62,22 @@ class MinerSample:
             "voltage": self.voltage,
             "current": self.current,
             "fanPercent": self.fan_percent,
+            "manualFanSpeed": self.manual_fan_speed,
+            "autoFanSpeed": self.auto_fan_speed,
             "fanRpm": self.fan_rpm,
+            "pidTargetTemp": self.pid_target_temp,
+            "overheatTemp": self.overheat_temp,
             "sharesAccepted": self.shares_accepted,
             "sharesRejected": self.shares_rejected,
             "bestDiff": self.best_diff,
             "bestSessionDiff": self.best_session_diff,
             "wifiRSSI": self.wifi_rssi,
             "frequency": self.frequency,
+            "actualFrequency": self.actual_frequency,
+            "defaultFrequency": self.default_frequency,
             "coreVoltage": self.core_voltage,
             "coreVoltageActual": self.core_voltage_actual,
+            "defaultCoreVoltage": self.default_core_voltage,
             "uptimeSeconds": self.uptime_seconds,
             "version": self.firmware_version,
             "hostname": self.hostname,

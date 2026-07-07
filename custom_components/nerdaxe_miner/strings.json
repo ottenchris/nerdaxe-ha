@@ -52,20 +52,30 @@
       "current": { "name": "Current" },
       "fan_percent": { "name": "Fan" },
       "fan_rpm": { "name": "Fan RPM" },
+      "manual_fan_speed": { "name": "Manual fan speed" },
+      "pid_target_temperature": { "name": "Target temperature" },
+      "overheat_temperature": { "name": "Overheat temperature" },
       "shares_accepted": { "name": "Shares accepted" },
       "shares_rejected": { "name": "Shares rejected" },
       "best_diff": { "name": "Best diff" },
       "best_session_diff": { "name": "Best session diff" },
       "wifi_rssi": { "name": "Wi-Fi RSSI" },
       "frequency": { "name": "Frequency" },
+      "actual_frequency": { "name": "Actual frequency" },
+      "default_frequency": { "name": "Default frequency" },
       "core_voltage": { "name": "Core voltage" },
       "core_voltage_actual": { "name": "Actual core voltage" },
+      "default_core_voltage": { "name": "Default core voltage" },
       "uptime": { "name": "Uptime" },
       "firmware_version": { "name": "Firmware version" },
       "hostname": { "name": "Hostname" }
     },
     "binary_sensor": {
-      "stratum_connected": { "name": "Stratum connected" }
+      "stratum_connected": { "name": "Stratum connected" },
+      "auto_fan_speed": { "name": "Automatic fan speed" }
+    },
+    "button": {
+      "restart": { "name": "Restart" }
     }
   }
 }

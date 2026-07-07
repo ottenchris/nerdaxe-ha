@@ -19,6 +19,7 @@ DEFAULT_HISTORY_STORE_RAW_PAYLOAD = False
 DEFAULT_TIMEOUT_SECONDS = 10
 
 INFO_PATH = "/api/system/info"
+RESTART_PATH = "/api/system/restart"
 RECORDER_DIR_NAME = "nerdaxe_recorder"
 
 OPTIONS_DEFAULTS = {

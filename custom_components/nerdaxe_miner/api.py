@@ -8,7 +8,7 @@ from urllib.parse import urlsplit
 
 import aiohttp
 
-from .const import DEFAULT_TIMEOUT_SECONDS, INFO_PATH
+from .const import DEFAULT_TIMEOUT_SECONDS, INFO_PATH, RESTART_PATH
 
 
 class MinerApiError(Exception):
@@ -47,10 +47,18 @@ def normalize_host(host: str) -> str:
     return value.lower()
 
 
+def build_api_url(host: str, path: str) -> str:
+    """Build a miner API endpoint URL for a host and absolute path."""
+
+    if not path.startswith("/"):
+        raise ValueError("path must be absolute")
+    return f"http://{normalize_host(host)}{path}"
+
+
 def build_info_url(host: str) -> str:
     """Build the miner info endpoint URL for a host."""
 
-    return f"http://{normalize_host(host)}{INFO_PATH}"
+    return build_api_url(host, INFO_PATH)
 
 
 class MinerApiClient:
@@ -72,41 +80,16 @@ class MinerApiClient:
 
         return build_info_url(self.host)
 
+    @property
+    def restart_url(self) -> str:
+        """Return the system restart endpoint URL."""
+
+        return self._build_url(RESTART_PATH)
+
     async def async_get_info(self) -> dict[str, Any]:
         """Fetch and parse miner system info."""
 
-        try:
-            async with self._session.get(
-                self.info_url,
-                headers={"Accept": "application/json"},
-                timeout=self._timeout,
-            ) as response:
-                if response.status >= 400:
-                    body = (await response.text()).strip()[:300]
-                    raise MinerApiError(
-                        f"Miner returned HTTP {response.status}",
-                        url=self.info_url,
-                        status=response.status,
-                        body_preview=body or None,
-                    )
-
-                try:
-                    payload = await response.json(content_type=None)
-                except Exception as err:
-                    body = (await response.text()).strip()[:300]
-                    raise MinerApiError(
-                        "Miner returned invalid JSON",
-                        url=self.info_url,
-                        body_preview=body or None,
-                    ) from err
-        except asyncio.TimeoutError as err:
-            raise MinerApiError(
-                "Timed out while fetching miner data",
-                url=self.info_url,
-            ) from err
-        except aiohttp.ClientError as err:
-            raise MinerApiError(str(err), url=self.info_url) from err
-
+        payload = await self._async_request("GET", INFO_PATH, expect_json=True)
         if not isinstance(payload, dict):
             raise MinerApiError(
                 "Miner returned a non-object JSON payload",
@@ -114,3 +97,59 @@ class MinerApiClient:
             )
 
         return payload
+
+    async def async_restart(self) -> None:
+        """Restart the miner through the documented AxeOS endpoint."""
+
+        await self._async_request("POST", RESTART_PATH, expect_json=False)
+
+    def _build_url(self, path: str) -> str:
+        """Build a URL for a miner API path."""
+
+        return build_api_url(self.host, path)
+
+    async def _async_request(
+        self,
+        method: str,
+        path: str,
+        *,
+        expect_json: bool,
+    ) -> Any:
+        """Run one HTTP request against the miner API."""
+
+        url = self._build_url(path)
+        try:
+            async with self._session.request(
+                method,
+                url,
+                headers={"Accept": "application/json"},
+                timeout=self._timeout,
+            ) as response:
+                if response.status >= 400:
+                    body = (await response.text()).strip()[:300]
+                    raise MinerApiError(
+                        f"Miner returned HTTP {response.status}",
+                        url=url,
+                        status=response.status,
+                        body_preview=body or None,
+                    )
+
+                if not expect_json:
+                    return None
+
+                try:
+                    return await response.json(content_type=None)
+                except Exception as err:
+                    body = (await response.text()).strip()[:300]
+                    raise MinerApiError(
+                        "Miner returned invalid JSON",
+                        url=url,
+                        body_preview=body or None,
+                    ) from err
+        except asyncio.TimeoutError as err:
+            raise MinerApiError(
+                "Timed out while contacting miner",
+                url=url,
+            ) from err
+        except aiohttp.ClientError as err:
+            raise MinerApiError(str(err), url=url) from err

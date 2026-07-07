@@ -15,7 +15,8 @@ outside Home Assistant's normal recorder database.
 
 ## Status
 
-This is an MVP and intentionally read-only.
+This is a conservative controls MVP. Polling is still read-only, and the only
+write action is an explicit Home Assistant restart button.
 
 Implemented:
 
@@ -23,6 +24,8 @@ Implemented:
 - Local polling through Home Assistant's aiohttp client session
 - `DataUpdateCoordinator` based entity updates
 - Sensor and binary sensor entities
+- Restart button entity
+- Read-only fan and tuning setting diagnostics
 - Optional daily NDJSON history under the Home Assistant config directory
 - gzip archival for old raw day files
 - storage-budget retention
@@ -30,8 +33,10 @@ Implemented:
 
 Not implemented yet:
 
-- restart or tuning controls
+- fan speed writes
 - frequency/core-voltage writes
+- temp-target writes
+- pool settings writes
 - firmware update
 - history export services
 - session and tuning-profile analysis
@@ -98,14 +103,20 @@ Numeric sensors:
 - Current
 - Fan percent
 - Fan RPM
+- Manual fan speed
+- Target temperature
+- Overheat temperature
 - Shares accepted
 - Shares rejected
 - Best diff
 - Best session diff
 - Wi-Fi RSSI
 - Frequency
+- Actual frequency
+- Default frequency
 - Core voltage
 - Actual core voltage
+- Default core voltage
 - Uptime
 
 Text sensors:
@@ -116,10 +127,50 @@ Text sensors:
 Binary sensors:
 
 - Stratum connected
+- Automatic fan speed
+
+Buttons:
+
+- Restart
 
 Large raw API payloads are not stored as entity attributes. This keeps Home
 Assistant's recorder database smaller and avoids constantly changing large
 attribute blobs.
+
+## Controls
+
+Version `0.2.0` adds one writable control:
+
+```text
+POST http://<miner-host>/api/system/restart
+```
+
+Home Assistant exposes this as a **Restart** button entity with restart device
+class. Pressing it asks the miner to reboot. This can interrupt mining, network
+connectivity and dashboards until the device comes back online.
+
+Important safety behavior:
+
+- Polling never calls write endpoints. The coordinator only reads
+  `GET /api/system/info`.
+- Restart is never run automatically by setup, polling, diagnostics or the
+  options flow.
+- Home Assistant buttons can still be used in automations. Add your own
+  automation conditions if you expose this button to broader dashboards.
+
+The AxeOS / ESP-Miner API also documents:
+
+```text
+PATCH http://<miner-host>/api/system
+```
+
+with settings such as `fanspeed`, `autofanspeed`, `temptarget`, `frequency`,
+`coreVoltage` and `overclockEnabled`. This integration intentionally does not
+write those settings yet. Fan and tuning values are exposed as read-only
+diagnostic entities until hardware-specific ranges and guardrails are added.
+
+Firmware update endpoints such as `/api/system/OTA` and `/api/system/OTAWWW`
+are explicitly out of scope.
 
 ## Raw History
 
@@ -138,7 +189,8 @@ history-YYYY-MM-DD.ndjson.gz
 ```
 
 Each line contains one JSON object with `ts`, normalized fields such as
-`hashRate`, `temp`, `power`, `fanPercent`, `frequency`, `coreVoltage` and
+`hashRate`, `temp`, `power`, `fanPercent`, `manualFanSpeed`, `frequency`,
+`defaultFrequency`, `coreVoltage`, `defaultCoreVoltage` and
 `stratumConnected`, plus sanitized unrecognized API fields under `extra` when
 present.
 
@@ -170,6 +222,10 @@ where scan interval and history settings can be changed later.
 **Entity**: a value Home Assistant can display, record and automate. This
 integration exposes miner metrics as real sensor entities instead of one large
 JSON attribute.
+
+**Button entity**: a stateless Home Assistant entity for one-off actions. This
+integration uses it for restart because restart is an explicit command, not a
+persistent on/off state.
 
 **Device**: Home Assistant groups all entities from the same miner under one
 device in the device registry.
@@ -227,6 +283,7 @@ custom_components/nerdaxe_miner/
   __init__.py
   api.py
   binary_sensor.py
+  button.py
   config_flow.py
   const.py
   coordinator.py
@@ -238,6 +295,8 @@ custom_components/nerdaxe_miner/
   sensor.py
   strings.json
 tests/
+  test_api.py
+  test_coordinator.py
   test_history_store.py
   test_normalizer.py
 ```

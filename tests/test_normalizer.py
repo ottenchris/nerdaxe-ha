@@ -27,15 +27,22 @@ class NormalizerTest(unittest.TestCase):
             "voltage": 5000,
             "current": "2.5",
             "fanspeed": 44,
+            "manualFanSpeed": 80,
+            "autofanspeed": 1,
             "fanrpm": "6200",
+            "pidTargetTemp": 66,
+            "overheat_temp": 70,
             "sharesAccepted": "12",
             "sharesRejected": "1",
             "bestDiff": "1.5G",
             "bestSessionDiff": "250M",
             "wifiRSSI": "-63",
             "frequency": "550",
+            "actualFrequency": 545,
+            "defaultFrequency": 500,
             "coreVoltage": "1090",
             "coreVoltageActual": 1084,
+            "defaultCoreVoltage": 1150,
             "uptimeSeconds": "12345",
             "hostname": "nerdaxe-gamma",
             "version": "2.6.1",
@@ -55,12 +62,24 @@ class NormalizerTest(unittest.TestCase):
         self.assertEqual(sample.temp, 58.2)
         self.assertEqual(sample.voltage, 5.0)
         self.assertEqual(sample.current, 2.5)
+        self.assertEqual(sample.manual_fan_speed, 80)
+        self.assertEqual(sample.auto_fan_speed, True)
         self.assertEqual(sample.fan_rpm, 6200)
+        self.assertEqual(sample.pid_target_temp, 66)
+        self.assertEqual(sample.overheat_temp, 70)
         self.assertEqual(sample.best_diff, 1_500_000_000)
         self.assertEqual(sample.best_session_diff, 250_000_000)
+        self.assertEqual(sample.actual_frequency, 545)
+        self.assertEqual(sample.default_frequency, 500)
+        self.assertEqual(sample.default_core_voltage, 1150)
         self.assertEqual(sample.stratum_connected, True)
         self.assertEqual(sample.stable_device_id, "aa_bb_cc_00_11_22")
         self.assertEqual(sample.extra, {"customField": {"nested": True}})
+
+    def test_normalizes_temptarget_alias(self) -> None:
+        sample = normalize_miner_payload({"temptarget": "67"})
+
+        self.assertEqual(sample.pid_target_temp, 67)
 
     def test_nested_stratum_aliases_are_used(self) -> None:
         payload = {
