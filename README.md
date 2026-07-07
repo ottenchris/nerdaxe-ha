@@ -15,8 +15,8 @@ outside Home Assistant's normal recorder database.
 
 ## Status
 
-This is a conservative controls MVP. Polling is still read-only, and the only
-write action is an explicit Home Assistant restart button.
+This is a conservative controls MVP. Polling is read-only, and write actions
+are exposed through explicit Home Assistant controls.
 
 Implemented:
 
@@ -25,7 +25,8 @@ Implemented:
 - `DataUpdateCoordinator` based entity updates
 - Sensor and binary sensor entities
 - Restart button entity
-- Read-only fan and tuning setting diagnostics
+- Fan control mode and guarded fan setting entities
+- Read-only tuning setting diagnostics
 - Optional daily NDJSON history under the Home Assistant config directory
 - gzip archival for old raw day files
 - storage-budget retention
@@ -33,9 +34,7 @@ Implemented:
 
 Not implemented yet:
 
-- fan speed writes
 - frequency/core-voltage writes
-- temp-target writes
 - pool settings writes
 - firmware update
 - history export services
@@ -103,8 +102,6 @@ Numeric sensors:
 - Current
 - Fan percent
 - Fan RPM
-- Manual fan speed
-- Target temperature
 - Overheat temperature
 - Shares accepted
 - Shares rejected
@@ -131,11 +128,19 @@ Timestamp sensors:
 Binary sensors:
 
 - Stratum connected
-- Automatic fan speed
 
 Buttons:
 
 - Restart
+
+Selects:
+
+- Fan control mode: `PID` or `Manual`
+
+Numbers:
+
+- Manual fan speed: `20-100 %`, available in Manual mode
+- PID target temperature: `50-66 °C`, available in PID mode
 
 Large raw API payloads are not stored as entity attributes. This keeps Home
 Assistant's recorder database smaller and avoids constantly changing large
@@ -143,7 +148,7 @@ attribute blobs.
 
 ## Controls
 
-Version `0.2.0` adds one writable control:
+Version `0.2.0` added one writable restart control:
 
 ```text
 POST http://<miner-host>/api/system/restart
@@ -162,16 +167,30 @@ Important safety behavior:
 - Home Assistant buttons can still be used in automations. Add your own
   automation conditions if you expose this button to broader dashboards.
 
-The AxeOS / ESP-Miner API also documents:
+Version `0.3.0` adds guarded fan controls through:
 
 ```text
 PATCH http://<miner-host>/api/system
 ```
 
-with settings such as `fanspeed`, `autofanspeed`, `temptarget`, `frequency`,
+The integration writes only these fan settings:
+
+- `autofanspeed`: `1` for PID/automatic fan control, `0` for manual fan control
+- `manualFanSpeed`: manual fan speed, exposed in Home Assistant as `20-100 %`
+- `temptarget`: PID target temperature, exposed in Home Assistant as `50-66 °C`
+
+The current fan speed from the miner is still read from `fanspeed` and exposed
+as the Fan percent sensor. The integration does not write `fanspeed`; current
+ESP-Miner settings use `manualFanSpeed` for manual fan configuration.
+
+Manual fan speed can only be written while the miner is in Manual mode. PID
+target temperature can only be written while the miner is in PID mode. The
+integration does not switch modes implicitly when a number value is changed.
+
+The AxeOS / ESP-Miner API also supports settings such as `frequency`,
 `coreVoltage` and `overclockEnabled`. This integration intentionally does not
-write those settings yet. Fan and tuning values are exposed as read-only
-diagnostic entities until hardware-specific ranges and guardrails are added.
+write those tuning settings yet. Frequency and core voltage remain read-only
+until hardware-specific options from `/api/system/asic` are used for guardrails.
 
 Firmware update endpoints such as `/api/system/OTA` and `/api/system/OTAWWW`
 are explicitly out of scope.
@@ -230,6 +249,13 @@ JSON attribute.
 **Button entity**: a stateless Home Assistant entity for one-off actions. This
 integration uses it for restart because restart is an explicit command, not a
 persistent on/off state.
+
+**Select entity**: a Home Assistant entity for choosing one option from a small
+set. This integration uses it for fan mode so Manual and PID are explicit.
+
+**Number entity**: a Home Assistant entity for bounded numeric settings. This
+integration uses it for manual fan speed and PID target temperature with local
+range limits.
 
 **Device**: Home Assistant groups all entities from the same miner under one
 device in the device registry.
@@ -311,11 +337,14 @@ custom_components/nerdaxe_miner/
   manifest.json
   models.py
   normalizer.py
+  number.py
+  select.py
   sensor.py
   strings.json
 tests/
   test_api.py
   test_coordinator.py
+  test_homeassistant_imports.py
   test_history_store.py
   test_normalizer.py
 ```

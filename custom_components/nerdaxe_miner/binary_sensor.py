@@ -11,7 +11,6 @@ from homeassistant.components.binary_sensor import (
     BinarySensorEntityDescription,
 )
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
@@ -34,13 +33,6 @@ BINARY_SENSOR_DESCRIPTIONS: tuple[NerdAxeBinarySensorEntityDescription, ...] = (
         translation_key="stratum_connected",
         device_class=BinarySensorDeviceClass.CONNECTIVITY,
         value_fn=lambda data: data.stratum_connected,
-    ),
-    NerdAxeBinarySensorEntityDescription(
-        key="auto_fan_speed",
-        name="Automatic fan speed",
-        translation_key="auto_fan_speed",
-        entity_category=EntityCategory.DIAGNOSTIC,
-        value_fn=lambda data: data.auto_fan_speed,
     ),
 )
 

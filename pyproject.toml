@@ -1,6 +1,6 @@
 [project]
 name = "nerdaxe-ha"
-version = "0.2.0"
+version = "0.3.0"
 description = "Home Assistant HACS integration for NerdAxe / NerdQAxe / ESP-Miner compatible Bitcoin miners"
 readme = "README.md"
 requires-python = ">=3.11"

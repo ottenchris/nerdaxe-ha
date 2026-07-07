@@ -8,7 +8,16 @@ from urllib.parse import urlsplit
 
 import aiohttp
 
-from .const import DEFAULT_TIMEOUT_SECONDS, INFO_PATH, RESTART_PATH
+from .const import (
+    DEFAULT_TIMEOUT_SECONDS,
+    FAN_SPEED_MAX,
+    FAN_SPEED_MIN,
+    INFO_PATH,
+    PID_TARGET_TEMP_MAX,
+    PID_TARGET_TEMP_MIN,
+    RESTART_PATH,
+    SYSTEM_PATH,
+)
 
 
 class MinerApiError(Exception):
@@ -61,6 +70,15 @@ def build_info_url(host: str) -> str:
     return build_api_url(host, INFO_PATH)
 
 
+def _validate_int_range(value: int, *, name: str, minimum: int, maximum: int) -> None:
+    """Validate an integer value before it is sent to the miner."""
+
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise ValueError(f"{name} must be an integer")
+    if value < minimum or value > maximum:
+        raise ValueError(f"{name} must be between {minimum} and {maximum}")
+
+
 class MinerApiClient:
     """Small aiohttp client for the local miner REST API."""
 
@@ -103,6 +121,45 @@ class MinerApiClient:
 
         await self._async_request("POST", RESTART_PATH, expect_json=False)
 
+    async def async_set_fan_control_mode(self, auto: bool) -> None:
+        """Set the miner fan control mode."""
+
+        if not isinstance(auto, bool):
+            raise ValueError("auto must be a boolean")
+        await self._async_patch_system_settings({"autofanspeed": 1 if auto else 0})
+
+    async def async_set_manual_fan_speed(self, percent: int) -> None:
+        """Set the manual fan speed percentage."""
+
+        _validate_int_range(
+            percent,
+            name="manual fan speed",
+            minimum=FAN_SPEED_MIN,
+            maximum=FAN_SPEED_MAX,
+        )
+        await self._async_patch_system_settings({"manualFanSpeed": percent})
+
+    async def async_set_pid_target_temp(self, celsius: int) -> None:
+        """Set the PID target temperature in degrees Celsius."""
+
+        _validate_int_range(
+            celsius,
+            name="PID target temperature",
+            minimum=PID_TARGET_TEMP_MIN,
+            maximum=PID_TARGET_TEMP_MAX,
+        )
+        await self._async_patch_system_settings({"temptarget": celsius})
+
+    async def _async_patch_system_settings(self, payload: dict[str, Any]) -> None:
+        """Patch a narrow set of system settings."""
+
+        await self._async_request(
+            "PATCH",
+            SYSTEM_PATH,
+            expect_json=False,
+            json_body=payload,
+        )
+
     def _build_url(self, path: str) -> str:
         """Build a URL for a miner API path."""
 
@@ -114,16 +171,23 @@ class MinerApiClient:
         path: str,
         *,
         expect_json: bool,
+        json_body: dict[str, Any] | None = None,
     ) -> Any:
         """Run one HTTP request against the miner API."""
 
         url = self._build_url(path)
+        request_kwargs: dict[str, Any] = {
+            "headers": {"Accept": "application/json"},
+            "timeout": self._timeout,
+        }
+        if json_body is not None:
+            request_kwargs["json"] = json_body
+
         try:
             async with self._session.request(
                 method,
                 url,
-                headers={"Accept": "application/json"},
-                timeout=self._timeout,
+                **request_kwargs,
             ) as response:
                 if response.status >= 400:
                     body = (await response.text()).strip()[:300]

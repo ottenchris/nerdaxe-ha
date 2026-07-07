@@ -62,7 +62,10 @@ class MinerApiClientTest(unittest.IsolatedAsyncioTestCase):
 
     async def test_restart_constructs_post_restart_request_without_body(self) -> None:
         session = FakeSession(FakeResponse(text='{"message":"restarting"}'))
-        client = MinerApiClient("http://miner.local/", session)  # type: ignore[arg-type]
+        client = MinerApiClient(  # type: ignore[arg-type]
+            "http://miner.local/",
+            session,
+        )
 
         await client.async_restart()
 
@@ -73,6 +76,56 @@ class MinerApiClientTest(unittest.IsolatedAsyncioTestCase):
         )
         self.assertNotIn("json", session.calls[0]["kwargs"])
         self.assertNotIn("data", session.calls[0]["kwargs"])
+
+    async def test_set_fan_control_mode_constructs_patch_system_request(self) -> None:
+        session = FakeSession(FakeResponse(text='{"ok":true}'))
+        client = MinerApiClient("miner.local", session)  # type: ignore[arg-type]
+
+        await client.async_set_fan_control_mode(True)
+        await client.async_set_fan_control_mode(False)
+
+        self.assertEqual(session.calls[0]["method"], "PATCH")
+        self.assertEqual(session.calls[0]["url"], "http://miner.local/api/system")
+        self.assertEqual(session.calls[0]["kwargs"]["json"], {"autofanspeed": 1})
+        self.assertEqual(session.calls[1]["kwargs"]["json"], {"autofanspeed": 0})
+
+    async def test_set_manual_fan_speed_uses_manual_fan_speed_key(self) -> None:
+        session = FakeSession(FakeResponse(text='{"ok":true}'))
+        client = MinerApiClient("miner.local", session)  # type: ignore[arg-type]
+
+        await client.async_set_manual_fan_speed(50)
+
+        self.assertEqual(session.calls[0]["method"], "PATCH")
+        self.assertEqual(session.calls[0]["url"], "http://miner.local/api/system")
+        self.assertEqual(session.calls[0]["kwargs"]["json"], {"manualFanSpeed": 50})
+        self.assertNotIn("fanspeed", session.calls[0]["kwargs"]["json"])
+
+    async def test_set_pid_target_temp_uses_temptarget_key(self) -> None:
+        session = FakeSession(FakeResponse(text='{"ok":true}'))
+        client = MinerApiClient("miner.local", session)  # type: ignore[arg-type]
+
+        await client.async_set_pid_target_temp(60)
+
+        self.assertEqual(session.calls[0]["method"], "PATCH")
+        self.assertEqual(session.calls[0]["url"], "http://miner.local/api/system")
+        self.assertEqual(session.calls[0]["kwargs"]["json"], {"temptarget": 60})
+
+    async def test_fan_setting_validation_rejects_unsafe_values(self) -> None:
+        session = FakeSession(FakeResponse(text='{"ok":true}'))
+        client = MinerApiClient("miner.local", session)  # type: ignore[arg-type]
+
+        with self.assertRaises(ValueError):
+            await client.async_set_fan_control_mode(1)  # type: ignore[arg-type]
+        with self.assertRaises(ValueError):
+            await client.async_set_manual_fan_speed(19)
+        with self.assertRaises(ValueError):
+            await client.async_set_manual_fan_speed(101)
+        with self.assertRaises(ValueError):
+            await client.async_set_pid_target_temp(49)
+        with self.assertRaises(ValueError):
+            await client.async_set_pid_target_temp(67)
+
+        self.assertEqual(session.calls, [])
 
     async def test_http_error_raises_api_error_with_body_preview(self) -> None:
         session = FakeSession(FakeResponse(status=500, text="broken miner"))

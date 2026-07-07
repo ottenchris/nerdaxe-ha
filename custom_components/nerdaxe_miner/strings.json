@@ -52,8 +52,6 @@
       "current": { "name": "Current" },
       "fan_percent": { "name": "Fan" },
       "fan_rpm": { "name": "Fan RPM" },
-      "manual_fan_speed": { "name": "Manual fan speed" },
-      "pid_target_temperature": { "name": "Target temperature" },
       "overheat_temperature": { "name": "Overheat temperature" },
       "shares_accepted": { "name": "Shares accepted" },
       "shares_rejected": { "name": "Shares rejected" },
@@ -72,8 +70,14 @@
       "hostname": { "name": "Hostname" }
     },
     "binary_sensor": {
-      "stratum_connected": { "name": "Stratum connected" },
-      "auto_fan_speed": { "name": "Automatic fan speed" }
+      "stratum_connected": { "name": "Stratum connected" }
+    },
+    "select": {
+      "fan_control_mode": { "name": "Fan control mode" }
+    },
+    "number": {
+      "manual_fan_speed": { "name": "Manual fan speed" },
+      "pid_target_temperature": { "name": "PID target temperature" }
     },
     "button": {
       "restart": { "name": "Restart" }

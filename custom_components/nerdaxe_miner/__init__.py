@@ -14,7 +14,13 @@ async def async_setup_entry(hass, entry) -> bool:
     from .api import MinerApiClient
     from .coordinator import NerdAxeMinerCoordinator
 
-    platforms = (Platform.SENSOR, Platform.BINARY_SENSOR, Platform.BUTTON)
+    platforms = (
+        Platform.SENSOR,
+        Platform.BINARY_SENSOR,
+        Platform.BUTTON,
+        Platform.SELECT,
+        Platform.NUMBER,
+    )
     session = async_get_clientsession(hass)
     client = MinerApiClient(entry.data[CONF_HOST], session)
     coordinator = NerdAxeMinerCoordinator(hass, entry, client)
@@ -31,7 +37,13 @@ async def async_unload_entry(hass, entry) -> bool:
 
     from homeassistant.const import Platform
 
-    platforms = (Platform.SENSOR, Platform.BINARY_SENSOR, Platform.BUTTON)
+    platforms = (
+        Platform.SENSOR,
+        Platform.BINARY_SENSOR,
+        Platform.BUTTON,
+        Platform.SELECT,
+        Platform.NUMBER,
+    )
     unload_ok = await hass.config_entries.async_unload_platforms(entry, platforms)
     if unload_ok:
         hass.data[DOMAIN].pop(entry.entry_id, None)
