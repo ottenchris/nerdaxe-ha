@@ -50,6 +50,7 @@ class HomeAssistantImportTest(unittest.TestCase):
         self.assertIn("pid_target_temperature", sensor_keys)
         self.assertIn("default_frequency", sensor_keys)
         self.assertIn("default_core_voltage", sensor_keys)
+        self.assertIn("last_boot", sensor_keys)
         self.assertIn("auto_fan_speed", binary_sensor_keys)
 
     def test_options_schema_rejects_scan_interval_below_minimum(self) -> None:

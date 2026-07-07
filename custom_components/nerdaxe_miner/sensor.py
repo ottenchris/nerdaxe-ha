@@ -300,6 +300,14 @@ SENSOR_DESCRIPTIONS: tuple[NerdAxeSensorEntityDescription, ...] = (
         value_fn=lambda data: data.uptime_seconds,
     ),
     NerdAxeSensorEntityDescription(
+        key="last_boot",
+        name="Last boot",
+        translation_key="last_boot",
+        device_class=SensorDeviceClass.TIMESTAMP,
+        entity_category=EntityCategory.DIAGNOSTIC,
+        value_fn=lambda data: data.last_boot,
+    ),
+    NerdAxeSensorEntityDescription(
         key="firmware_version",
         name="Firmware version",
         translation_key="firmware_version",

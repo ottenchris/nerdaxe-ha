@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from datetime import datetime
 from typing import Any, Dict, Optional
 
 
@@ -39,6 +40,7 @@ class MinerSample:
     core_voltage_actual: Optional[float] = None
     default_core_voltage: Optional[float] = None
     uptime_seconds: Optional[float] = None
+    last_boot: Optional[datetime] = None
     firmware_version: Optional[str] = None
     hostname: Optional[str] = None
     stratum_connected: Optional[bool] = None
@@ -79,6 +81,11 @@ class MinerSample:
             "coreVoltageActual": self.core_voltage_actual,
             "defaultCoreVoltage": self.default_core_voltage,
             "uptimeSeconds": self.uptime_seconds,
+            "lastBoot": (
+                self.last_boot.isoformat().replace("+00:00", "Z")
+                if self.last_boot is not None
+                else None
+            ),
             "version": self.firmware_version,
             "hostname": self.hostname,
             "stratumConnected": self.stratum_connected,

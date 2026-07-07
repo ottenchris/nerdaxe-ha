@@ -124,6 +124,10 @@ Text sensors:
 - Firmware version
 - Hostname
 
+Timestamp sensors:
+
+- Last boot, derived from the current sample time minus `uptimeSeconds`
+
 Binary sensors:
 
 - Stratum connected
@@ -190,7 +194,7 @@ history-YYYY-MM-DD.ndjson.gz
 
 Each line contains one JSON object with `ts`, normalized fields such as
 `hashRate`, `temp`, `power`, `fanPercent`, `manualFanSpeed`, `frequency`,
-`defaultFrequency`, `coreVoltage`, `defaultCoreVoltage` and
+`defaultFrequency`, `coreVoltage`, `defaultCoreVoltage`, `lastBoot` and
 `stratumConnected`, plus sanitized unrecognized API fields under `extra` when
 present.
 
@@ -261,12 +265,27 @@ Install test dependencies:
 python -m pip install -e ".[test]"
 ```
 
+Install the local pre-commit hooks once per clone:
+
+```bash
+pre-commit install
+```
+
+The hooks run `ruff check --fix` and `ruff format` before each commit. The Ruff
+hook version is pinned in `.pre-commit-config.yaml`.
+
 Run checks:
 
 ```bash
 ruff format --check .
 ruff check .
 pytest
+```
+
+Run the same pre-commit hooks manually across the full repository:
+
+```bash
+pre-commit run --all-files
 ```
 
 The core normalization and history-store tests are written with `unittest`, so

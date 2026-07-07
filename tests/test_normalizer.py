@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import unittest
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from custom_components.nerdaxe_miner.normalizer import (
     find_stable_device_id,
@@ -72,6 +72,15 @@ class NormalizerTest(unittest.TestCase):
         self.assertEqual(sample.actual_frequency, 545)
         self.assertEqual(sample.default_frequency, 500)
         self.assertEqual(sample.default_core_voltage, 1150)
+        self.assertEqual(
+            sample.last_boot,
+            datetime(2026, 3, 10, 12, 0, 0, tzinfo=timezone.utc)
+            - timedelta(seconds=12345),
+        )
+        self.assertEqual(
+            sample.as_history_dict()["lastBoot"],
+            "2026-03-10T08:34:15Z",
+        )
         self.assertEqual(sample.stratum_connected, True)
         self.assertEqual(sample.stable_device_id, "aa_bb_cc_00_11_22")
         self.assertEqual(sample.extra, {"customField": {"nested": True}})
@@ -80,6 +89,12 @@ class NormalizerTest(unittest.TestCase):
         sample = normalize_miner_payload({"temptarget": "67"})
 
         self.assertEqual(sample.pid_target_temp, 67)
+
+    def test_negative_uptime_does_not_create_last_boot(self) -> None:
+        sample = normalize_miner_payload({"uptimeSeconds": -1})
+
+        self.assertEqual(sample.uptime_seconds, -1)
+        self.assertIsNone(sample.last_boot)
 
     def test_nested_stratum_aliases_are_used(self) -> None:
         payload = {

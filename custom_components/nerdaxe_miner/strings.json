@@ -67,6 +67,7 @@
       "core_voltage_actual": { "name": "Actual core voltage" },
       "default_core_voltage": { "name": "Default core voltage" },
       "uptime": { "name": "Uptime" },
+      "last_boot": { "name": "Last boot" },
       "firmware_version": { "name": "Firmware version" },
       "hostname": { "name": "Hostname" }
     },

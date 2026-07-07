@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import math
 import re
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Iterable, Optional
 
 from .models import MinerSample
@@ -291,10 +291,15 @@ def normalize_miner_payload(
     if not isinstance(payload, dict):
         payload = {}
 
-    ts = (
-        now.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
-        if now is not None
-        else utc_now_iso()
+    sample_time = (
+        now.astimezone(timezone.utc) if now is not None else datetime.now(timezone.utc)
+    )
+    ts = sample_time.isoformat().replace("+00:00", "Z")
+    uptime_seconds = to_float(pick_first(payload, ("uptimeSeconds",)))
+    last_boot = (
+        sample_time - timedelta(seconds=uptime_seconds)
+        if uptime_seconds is not None and uptime_seconds >= 0
+        else None
     )
 
     return MinerSample(
@@ -336,7 +341,8 @@ def normalize_miner_payload(
             pick_first(payload, ("coreVoltageActual", "coreVoltageActualMv"))
         ),
         default_core_voltage=to_float(pick_first(payload, ("defaultCoreVoltage",))),
-        uptime_seconds=to_float(pick_first(payload, ("uptimeSeconds",))),
+        uptime_seconds=uptime_seconds,
+        last_boot=last_boot,
         firmware_version=to_text(pick_first(payload, ("version",))),
         hostname=to_text(pick_first(payload, ("hostname",))),
         stratum_connected=infer_stratum_connected(payload),
